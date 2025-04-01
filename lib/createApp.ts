@@ -6,7 +6,7 @@ import { userHandler } from "../routes/routeHandlers.ts";
 import { apiReference } from "npm:@scalar/hono-api-reference";
 
 export function createApp() {
-  const app = new OpenAPIHono({ strict: false });
+  const app = new OpenAPIHono();
 
   app.onError((c, err) => onError(c, err));
 

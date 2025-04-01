@@ -10,7 +10,5 @@
     "drizzle-orm": "npm:drizzle-orm@^0.41.0",
     "pg": "npm:pg@^8.14.1"
   },
-  "unstable": [
-    "sloppy-imports"
-  ]
+  "unstable": ["sloppy-imports"]
 }
