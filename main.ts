@@ -1,7 +1,3 @@
-import { Hono } from "npm:hono";
+import app from "./src/app.ts";
 
-const app = new Hono();
-
-app.get("/", (c) => c.text("Hello Hono!"));
-
-Deno.serve({ port: 8080 }, app.fetch);
+Deno.serve(app.fetch);
