@@ -1,14 +1,26 @@
+// deno-lint-ignore-file ban-ts-comment
 import { createRoute } from "npm:@hono/zod-openapi";
+import { z } from "npm:@hono/zod-openapi";
 import { ParamSchema, UserSchema } from "./schemas.ts";
 
 export const createUserRoute = createRoute({
   method: "post",
-  path: "/users",
+  path: "/users/register",
   request: {
     body: {
       content: {
         "application/json": {
-          schema: UserSchema.omit({ id: true }),
+          //@ts-ignore
+          schema: z.object({
+            //@ts-ignore
+            name: z.string().openapi({ example: "John Doe" }),
+            //@ts-ignore
+            dob:z.string().openapi({example: "Wed Sep 30 1998 or 2003-05-16", description: "Date of Birth"}),
+            //@ts-ignore
+            email: z.string().email().openapi({example: "tqa@gmail.com"}),
+            //@ts-ignore
+            password: z.string().openapi({example: "password123", description: "Password"}),  
+          }),
         },
       },
     },
@@ -17,7 +29,6 @@ export const createUserRoute = createRoute({
     201: {
       content: {
         "application/json": {
-          // deno-lint-ignore ban-ts-comment
           // @ts-ignore
           schema: UserSchema,
         },
@@ -43,7 +54,6 @@ export const getUserRoute = createRoute({
     200: {
       content: {
         "application/json": {
-          // deno-lint-ignore ban-ts-comment
           // @ts-ignore
           schema: UserSchema,
         },
