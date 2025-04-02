@@ -1,9 +1,32 @@
+// deno-lint-ignore-file ban-ts-comment
 import { db } from "../database/drizzle/db.ts";
 import { usersTable } from "../database/drizzle/schemas.ts";
 import { eq } from "drizzle-orm";
-import { hash } from "jsr:@denorg/scrypt@4.4.4";
+import { hash, verify } from "jsr:@denorg/scrypt@4.4.4";
 
-// deno-lint-ignore ban-ts-comment
+// @ts-expect-error
+export const loginHandler = async (c) => {
+  const { email, password } = await c.req.json();
+  const user = await db
+    .select({ password: usersTable.password, name: usersTable.name })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .execute();
+
+  if (user.length === 0 || password === undefined) {
+    return c.json({ message: "incorrect credential" }, 401);
+  }
+
+  const verifyPassword = await verify(password, user[0].password);
+
+  return c.json({
+    message: "Login successfully",
+    user: user,
+    // using_password: password,
+    verify_status: verifyPassword,
+  });
+};
+
 // @ts-expect-error
 export const createUserHandler = async (c) => {
   const { name, dob, email, password } = await c.req.json();
@@ -16,22 +39,16 @@ export const createUserHandler = async (c) => {
       password: hashedPassword,
       email: email,
     })
-    .returning({ id: usersTable.id })
+    .returning({ id: usersTable.id, name: usersTable.name })
     .execute();
   return c.json({
-    id: user,
-    name,
-    dob: new Date(dob).toDateString(),
+    user: user,
     message: "User created successfully",
   });
 };
 
-export const getUserHandler = async (c: {
-  // deno-lint-ignore no-explicit-any
-  req: { valid: (arg0: string) => { id: any } };
-  // deno-lint-ignore no-explicit-any
-  json: (arg0: { id: string; name: string; dob: string }) => any;
-}) => {
+// @ts-expect-error
+export const getUserHandler = async (c) => {
   const { id } = c.req.valid("param");
   const user = await db
     .select()
@@ -46,12 +63,8 @@ export const getUserHandler = async (c: {
   });
 };
 
-export const deleteUserHandler = async (c: {
-  // deno-lint-ignore no-explicit-any
-  req: { valid: (arg0: string) => { id: any } };
-  // deno-lint-ignore no-explicit-any
-  json: (arg0: { message: string; name?: string }) => any;
-}) => {
+// @ts-expect-error
+export const deleteUserHandler = async (c) => {
   const { id } = c.req.valid("param");
   const user = await db
     .delete(usersTable)
