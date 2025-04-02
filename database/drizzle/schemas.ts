@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import {
   pgEnum,
   pgTable,
-  PgTable,
   text,
   timestamp,
   uuid,
@@ -10,6 +9,7 @@ import {
 
 export const usersRoles = pgEnum("usersRoles", ["ADMIN", "BASIC"]);
 
+// tables
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -38,6 +38,7 @@ export const usersCommentsTable = pgTable("users_comments", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// relationships
 export const postsRelations = relations(usersPostsTable, ({ one }) => ({
   user: one(usersTable, {
     fields: [usersPostsTable.autthorId],
@@ -57,8 +58,8 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
   posts: many(usersPostsTable),
 }));
 
+// inference types
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
-
 export type InsertUserComment = typeof usersCommentsTable.$inferInsert;
 export type SelectUserComment = typeof usersCommentsTable.$inferSelect;
