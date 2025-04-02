@@ -2,14 +2,31 @@ import { db } from "../database/drizzle/db.ts";
 import { usersTable } from "../database/drizzle/schemas.ts";
 import { eq } from "drizzle-orm";
 
-export const getUserHandler = async (
-  c: {
-    // deno-lint-ignore no-explicit-any
-    req: { valid: (arg0: string) => { id: any } };
-    // deno-lint-ignore no-explicit-any
-    json: (arg0: { id: string; name: string; dob: string }) => any;
-  },
-) => {
+// deno-lint-ignore ban-ts-comment
+// @ts-expect-error
+export const createUserHandler = async (c) => {
+  const { name, dob, password, email } = c.req.valid("body");
+  const user = await db
+    .insert(usersTable)
+    .values({ name, dob: new Date(dob), password, email })
+    .returning({ id: usersTable.id })
+    .execute();
+  if (user.length === 0) {
+    return c.json({ message: "User not created" });
+  }
+  return c.json({
+    id: user[0].id,
+    name,
+    dob: new Date(dob).toDateString(),
+  });
+};
+
+export const getUserHandler = async (c: {
+  // deno-lint-ignore no-explicit-any
+  req: { valid: (arg0: string) => { id: any } };
+  // deno-lint-ignore no-explicit-any
+  json: (arg0: { id: string; name: string; dob: string }) => any;
+}) => {
   const { id } = c.req.valid("param");
   const user = await db
     .select()
@@ -24,21 +41,20 @@ export const getUserHandler = async (
   });
 };
 
-export const deleteUserHandler = async (
-  c: {
-    // deno-lint-ignore no-explicit-any
-    req: { valid: (arg0: string) => { id: any } };
-    // deno-lint-ignore no-explicit-any
-    json: (arg0: { message: string; name?: string }) => any;
-  }) => {
-    const {id} = c.req.valid("param");
-    const user = await db
-      .delete(usersTable)
-      .where(eq(usersTable.id, id))
-      .returning({name: usersTable.name})
-      .execute();
-    if (user.length === 0) {
-      return c.json({ message: "User not found" });
-    }
-    return c.json({ message: "User deleted successfully", name: user[0].name });    
+export const deleteUserHandler = async (c: {
+  // deno-lint-ignore no-explicit-any
+  req: { valid: (arg0: string) => { id: any } };
+  // deno-lint-ignore no-explicit-any
+  json: (arg0: { message: string; name?: string }) => any;
+}) => {
+  const { id } = c.req.valid("param");
+  const user = await db
+    .delete(usersTable)
+    .where(eq(usersTable.id, id))
+    .returning({ name: usersTable.name })
+    .execute();
+  if (user.length === 0) {
+    return c.json({ message: "User not found" });
   }
+  return c.json({ message: "User deleted successfully", name: user[0].name });
+};

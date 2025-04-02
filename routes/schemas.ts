@@ -25,9 +25,16 @@ export const UserSchema = z
     //@ts-ignore
     name: z.string().openapi({ example: "John Doe" }),
     dob: z.string().openapi({
-      example: "Wed Sep 30 1998",
+      example: "Wed Sep 30 1998 or 2003-05-16",
       //@ts-ignore
       description: "Date of Birth",
+    }),
+    //@ts-ignore
+    email: z.string().email().openapi({ example: "tqa@gmail.com" }),
+    password: z.string().openapi({
+      example: "password123",
+      //@ts-ignore
+      description: "Password",
     }),
   })
   .openapi("User");
