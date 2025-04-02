@@ -1,7 +1,7 @@
 {
   "tasks": {
     "dev": "deno run --watch --allow-net --allow-env --env-file=.env main.ts",
-    "test": "deno run ./test/bcrypt.test.ts",
+    "test": "deno run --watch --allow-env --env-file=.env ./test/sandbox.test.ts",
     "build": "deno run --allow-net --allow-env --env-file=.env main.ts build",
     "db:push": "deno --env -A --node-modules-dir npm:drizzle-kit push"
   },
