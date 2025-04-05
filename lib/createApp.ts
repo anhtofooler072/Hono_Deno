@@ -7,12 +7,14 @@ import {
   deleteUserRoute,
   getUserRoute,
   loginRoute,
+  getAllUsersRoute
 } from "../routes/userRoutes.ts";
 import {
   createUserHandler,
   deleteUserHandler,
   getUserHandler,
   loginHandler,
+  getAllUsersHandler
 } from "../routes/routeHandlers.ts";
 import { apiReference } from "npm:@scalar/hono-api-reference";
 
@@ -32,6 +34,8 @@ export function createApp() {
   app.openapi(deleteUserRoute, deleteUserHandler);
   // @ts-ignore
   app.openapi(createUserRoute, createUserHandler);
+  // @ts-ignore
+  app.openapi(getAllUsersRoute, getAllUsersHandler);
 
   app.doc("/doc", {
     openapi: "3.0.0",

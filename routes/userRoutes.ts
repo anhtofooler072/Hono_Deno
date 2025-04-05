@@ -3,6 +3,22 @@ import { createRoute } from "npm:@hono/zod-openapi";
 import { z } from "npm:@hono/zod-openapi";
 import { ParamSchema, UserSchema } from "./schemas.ts";
 
+export const getAllUsersRoute = createRoute({
+  method: "get",
+  path: "/users",
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          // @ts-ignore
+          schema: z.array(UserSchema.omit({ password: true, id: true })),
+        },
+      },
+      description: "Retrieve all users",
+    },
+  },
+});
+
 export const loginRoute = createRoute({
   method: "post",
   path: "/users/login",

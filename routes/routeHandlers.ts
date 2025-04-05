@@ -76,3 +76,17 @@ export const deleteUserHandler = async (c) => {
   }
   return c.json({ message: "User deleted successfully", name: user[0].name });
 };
+
+// @ts-expect-error
+export const getAllUsersHandler = async (c) => {
+  const users = await db
+    .select({
+      name: usersTable.name,
+      email: usersTable.email,
+      dob: usersTable.dob,
+    })
+    .from(usersTable)    
+    .limit(4)
+    .execute();
+  return c.json(users);
+};
