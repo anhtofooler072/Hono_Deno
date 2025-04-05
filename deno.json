@@ -1,8 +1,8 @@
 {
   "tasks": {
     "dev": "deno run --watch --allow-net --allow-env --env-file=.env main.ts",
-    "test": "deno run --watch --allow-env --env-file=.env ./test/sandbox.test.ts",
-    "build": "deno run --allow-net --allow-env --env-file=.env main.ts build",
+    "test": "deno run --watch --allow-env --env-file=.env",
+    "build": "deno compile --allow-net --allow-env --no-check --output=example-deno main.ts",
     "db:push": "deno --env -A --node-modules-dir npm:drizzle-kit push"
   },
   "imports": {
@@ -10,7 +10,18 @@
     "@types/pg": "npm:@types/pg@^8.11.11",
     "drizzle-kit": "npm:drizzle-kit@^0.30.6",
     "drizzle-orm": "npm:drizzle-orm@^0.41.0",
+    "hono": "npm:hono@^4.7.5",
     "pg": "npm:pg@^8.14.1"
   },
-  "unstable": ["sloppy-imports"]
+  "unstable": [
+    "sloppy-imports"
+  ],
+  "deploy": {
+    "project": "9f2a38d4-809b-4a36-92be-5ecc76cdc3a9",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "main.ts"
+  }
 }

@@ -1,6 +1,7 @@
 // deno-lint-ignore-file ban-ts-comment
 import { OpenAPIHono } from "npm:@hono/zod-openapi";
 import { notFound, onError } from "npm:stoker/middlewares";
+import { cors } from "hono/cors";
 // import { pinoLogger } from "../middlewares/pino-logger.ts";
 import {
   createUserRoute,
@@ -25,8 +26,7 @@ export function createApp() {
 
   app.notFound((c) => notFound(c));
 
-  // app.use(pinoLogger());
-
+  
   app.openapi(loginRoute, loginHandler);
   // @ts-ignore
   app.openapi(getUserRoute, getUserHandler);
@@ -36,6 +36,15 @@ export function createApp() {
   app.openapi(createUserRoute, createUserHandler);
   // @ts-ignore
   app.openapi(getAllUsersRoute, getAllUsersHandler);
+  
+  app.use(cors({
+    origin: ['http://localhost:3000'], // Specify allowed origins
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],          // Allowed HTTP methods
+    allowHeaders: ['Content-Type', 'Authorization'],         // Allowed headers
+    exposeHeaders: ['X-Custom-Header'],                      // Headers exposed to the client
+    maxAge: 86400,                                           // Cache duration for preflight requests
+    credentials: true                                        // Include credentials in requests
+  }));
 
   app.doc("/doc", {
     openapi: "3.0.0",
