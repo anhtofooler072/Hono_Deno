@@ -5,7 +5,7 @@ import { ParamSchema, UserSchema } from "./schemas.ts";
 
 export const getAllUsersRoute = createRoute({
   method: "get",
-  path: "/users",
+  path: "/users/all",
   responses: {
     200: {
       content: {
@@ -113,7 +113,7 @@ export const createUserRoute = createRoute({
 
 export const getUserRoute = createRoute({
   method: "get",
-  path: "/users/{id}",
+  path: "/users/getbyId/{id}",
   request: {
     params: ParamSchema,
   },
