@@ -6,6 +6,22 @@ import { ParamSchema, UserSchema } from "./schemas.ts";
 export const getAllUsersRoute = createRoute({
   method: "get",
   path: "/users/all",
+  request: {
+    //@ts-ignore
+    query: z.object({
+      page: z.string().optional().openapi({
+        example: "1",
+        //@ts-ignore
+        description: "Page number for pagination",
+      }),
+      //@ts-ignore
+      limit: z.string().optional().openapi({
+        example: "10",
+        //@ts-ignore
+        description: "Number of users per page",
+      }),
+    }),
+  },
   responses: {
     200: {
       content: {

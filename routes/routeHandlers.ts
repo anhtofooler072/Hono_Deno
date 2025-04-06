@@ -79,14 +79,23 @@ export const deleteUserHandler = async (c) => {
 
 // @ts-expect-error
 export const getAllUsersHandler = async (c) => {
+  const { page, limit } = c.req.valid("query");
+  // example: /users?page=1&limit=10
+  const pageNumber = parseInt(page) || 1;
+  const limitNumber = parseInt(limit) || 10;
+  const offset = (pageNumber - 1) * limitNumber;
   const users = await db
     .select({
       name: usersTable.name,
       email: usersTable.email,
       dob: usersTable.dob,
     })
-    .from(usersTable)    
-    .limit(4)
+    .from(usersTable)
+    .limit(limitNumber)
+    .offset(offset)
     .execute();
+  if (users.length === 0) {
+    return c.json({ message: "No users found" }, 404);
+  }
   return c.json(users);
 };
