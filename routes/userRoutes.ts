@@ -27,7 +27,11 @@ export const getAllUsersRoute = createRoute({
       content: {
         "application/json": {
           // @ts-ignore
-          schema: z.array(UserSchema.omit({ password: true, id: true })),
+          schema: z.object({
+            count: z.number(),
+            //@ts-ignore
+            users: z.array(UserSchema.omit({ password: true, id: true })),
+          }),
         },
       },
       description: "Retrieve all users",

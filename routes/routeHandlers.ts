@@ -1,7 +1,7 @@
 // deno-lint-ignore-file ban-ts-comment
 import { db } from "../database/drizzle/db.ts";
 import { usersTable } from "../database/drizzle/schemas.ts";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 import { hash, verify } from "jsr:@denorg/scrypt@4.4.4";
 
 // @ts-expect-error
@@ -84,6 +84,19 @@ export const getAllUsersHandler = async (c) => {
   const pageNumber = parseInt(page) || 1;
   const limitNumber = parseInt(limit) || 10;
   const offset = (pageNumber - 1) * limitNumber;
+
+  const countUsers = await db.select({ count: count() }).from(usersTable);
+
+  const totalUsers = countUsers[0].count;
+  const maxPage = Math.ceil(totalUsers / limitNumber);
+
+  if (pageNumber > maxPage) {
+    return c.json(
+      { message: `Page exceeds maximum limit. Maximum page is ${maxPage}` },
+      400
+    );
+  }
+
   const users = await db
     .select({
       name: usersTable.name,
@@ -94,8 +107,13 @@ export const getAllUsersHandler = async (c) => {
     .limit(limitNumber)
     .offset(offset)
     .execute();
+
   if (users.length === 0) {
     return c.json({ message: "No users found" }, 404);
   }
-  return c.json(users);
+
+  return c.json({
+    count: totalUsers,
+    users: users,
+  });
 };
